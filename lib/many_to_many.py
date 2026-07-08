@@ -13,8 +13,8 @@ class Author:
         return [contract.book for contract in self.contracts()]
 
     def sign_contract(self, book, date, royalties):
-        # create a new contract linking this author and book
-        Contract(self, book, date, royalties)
+        # create and return a new contract linking this author and book
+        return Contract(self, book, date, royalties)
 
     def total_royalties(self):
         # sum of royalties across all this author's contracts
@@ -37,12 +37,22 @@ class Book:
 class Contract:
     all = []  # tracks every Contract instance
     def __init__(self, author, book, date, royalties):
+        # validate each argument's type before storing
+        if not isinstance(author, Author):
+            raise Exception("author must be an Author")
+        if not isinstance(book, Book):
+            raise Exception("book must be a Book")
+        if not isinstance(date, str):
+            raise Exception("date must be a string")
+        if not isinstance(royalties, int):
+            raise Exception("royalties must be an int")
         self.author = author
         self.book = book
         self.date = date
         self.royalties = royalties
         Contract.all.append(self)
 
-    def contracts_by_date(self):
-        # all contracts sorted by date
-        return sorted(Contract.all, key=lambda contract: contract.date)
+    @classmethod
+    def contracts_by_date(cls, date):
+        # all contracts matching the given date
+        return [contract for contract in cls.all if contract.date == date]
